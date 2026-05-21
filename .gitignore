@@ -1,0 +1,13 @@
+.git
+.idea
+.venv
+dist
+test
+__pycache__/
+tmp
+results
+*.gz
+*.log
+*.aux
+*.pretex
+.hypothesis

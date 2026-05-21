@@ -1,0 +1,197 @@
+import random
+from collections import defaultdict
+from typing import Optional
+
+
+def unordered_remove[T](lst: list[T], index: int) -> None:
+    assert 0 <= index < len(lst)
+
+    last = lst.pop()
+
+    if index != len(lst):
+        lst[index] = last
+
+
+class setr[T]:
+    def __init__(self) -> None:
+        self.list: list[T] = []
+        self.map: dict[T, int] = {}
+
+    def __len__(self) -> int:
+        return len(self.list)
+
+    def add(self, el: T) -> None:
+        if el in self.map: return
+
+        self.map[el] = len(self.list)
+        self.list.append(el)
+
+    def remove(self, el: T) -> None:
+        assert el in self.map
+        index = self.map.pop(el)
+        assert 0 <= index < len(self.list)
+        assert self.list[index] == el
+
+        last = self.list.pop()
+        if index == len(self.list):  # If the element is the last in the list
+            ...
+        else:
+            self.list[index] = last
+            self.map[last] = index
+
+    def random(self) -> T:
+        return random.choice(self.list)
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return str(self.list)
+
+
+def psi(x: int) -> int:
+    return 2 * x - 1
+
+
+class priority_stack[T]:
+    """A priority stack that maintains elements based on their priority levels."""
+
+    MIN = 0
+    MAX = 1
+
+    def __init__(self) -> None:
+        """
+                Initialize the priority stack with empty levels and no bounds.
+                """
+        self.levels: defaultdict[int, setr[T]] = defaultdict(setr)
+        self.priorities: dict[T, int] = {}
+        self.bounds: list[Optional[int]] = [None, None]
+
+    def __len__(self) -> int:
+        return len(self.priorities)
+
+    def set(self, el: T, priority: int) -> None:
+        """
+                Set the priority of a given element.
+
+                This operation updates the bounds of the stack as necessary and
+                ensures that the element is registered under its new priority level.
+
+                Args:
+                    el (T): The element to set.
+                    priority (int): The priority level to assign to the element.
+                """
+        old_min = self.bounds[self.MIN]
+        old_max = self.bounds[self.MAX]
+        if old_min is None or priority < old_min:
+            self.bounds[self.MIN] = priority
+        if old_max is None or priority > old_max:
+            self.bounds[self.MAX] = priority
+
+        if el in self.priorities:
+            self.levels[self.priorities[el]].remove(el)
+
+        self.priorities[el] = priority
+        self.levels[priority].add(el)
+
+        self.contract_bounds()
+
+    def unset(self, el: T) -> None:
+        """
+                Remove an element from the priority stack.
+
+                This method deletes the element and updates the bounds accordingly.
+
+                Args:
+                    el (T): The element to unset.
+                """
+        if el not in self.priorities:
+            return
+
+        self.levels[self.priorities[el]].remove(el)
+        del self.priorities[el]
+
+        if len(self) > 0:
+            self.contract_bounds()
+        else:
+            self.bounds[0] = None
+            self.bounds[1] = None
+
+    def contract_bound(self, bound: int) -> None:
+        """
+                Contract a specific bound (minimum or maximum) by finding the nearest existing priority level.
+
+                Args:
+                    bound (int): The index indicating which bound to contract (0 for MIN, 1 for MAX).
+                """
+        s = psi(bound)
+        current = self.bounds[bound]
+
+        while current not in self.levels or len(self.levels[current]) == 0:
+            current -= s
+
+        self.bounds[bound] = current
+
+    def contract_bounds(self) -> None:
+        self.contract_bound(self.MIN)
+        self.contract_bound(self.MAX)
+
+    def min(self) -> setr[T]:
+        """
+                Get all elements at the minimum priority level.
+
+                Returns:
+                    set: A set of elements at the current minimum priority level.
+
+                Raises:
+                    AssertionError: If the minimum bound is not set.
+                """
+        assert self.bounds[self.MIN] is not None
+        return self.levels[self.bounds[self.MIN]]
+
+    def max(self) -> setr[T]:
+        """
+                Get all elements at the maximum priority level.
+
+                Returns:
+                    set: A set of elements at the current maximum priority level.
+
+                Raises:
+                    AssertionError: If the maximum bound is not set.
+                """
+        assert self.bounds[self.MAX] is not None
+        return self.levels[self.bounds[self.MAX]]
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    def __str__(self) -> str:
+        return f"{self.bounds[self.MIN]} ≤ {dict(self.levels)} ≤ {self.bounds[self.MAX]}"
+
+
+def clamp(x, _min, _max):
+    if x < _min: return _min
+    if x > _max: return _max
+
+    return x
+
+
+def clamped_line(x1, y1, x2, y2, x):
+    slope = (y2 - y1) / (x2 - x1)
+    raw_value = slope * (x - x1) + y1
+    return clamp(raw_value, min(y1, y2), max(y1, y2))
+
+
+def wipe_screen():
+    print(end=clear_screen(2) + clear_screen(3) + Cursor.POS(0, 0), flush=True)
+
+
+def call_by_getitem(function):
+    class impl:
+        def __getitem__(self, i):
+            return function(i)
+
+        def __call__(self, *args, **kwargs):
+            return function(*args, **kwargs)
+
+    return impl()
