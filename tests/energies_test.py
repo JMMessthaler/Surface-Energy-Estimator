@@ -21,17 +21,16 @@ for i in range(len(TEST_ENERGIES_BIDI)):
         TEST_ENERGIES_BEST[i] = TEST_ENERGIES_BIDI[i]
 
 
-def test_energies():
+def test_energies_fcc():
     upper_bound = len(TEST_ENERGIES_BEST)
 
     graph = CommonBravais.fcc.value.graph(7)
     anneal = Anneal(graph, upper_bound)
-
     found = nrg.find(anneal.generate_states())
 
     for i in range(len(TEST_ENERGIES_BEST)):
         assert i in found
         if i <= 10:
-            assert found[i] ==  TEST_ENERGIES_BEST[i]
+            assert found[i] == TEST_ENERGIES_BEST[i]
         else:
             assert TEST_ENERGIES_BEST[i] - 10 <= found[i] <= TEST_ENERGIES_BEST[i]

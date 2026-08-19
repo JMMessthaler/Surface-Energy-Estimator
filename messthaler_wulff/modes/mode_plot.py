@@ -2,9 +2,11 @@ from argparse import ArgumentParser
 
 import mydefaults
 import numpy as np
+import sys
 from matplotlib.pyplot import show
-from scipy.spatial.qhull import ConvexHull
+from scipy.spatial import ConvexHull
 
+from messthaler_wulff import mylog
 from messthaler_wulff.math.bravais import plot_bravais_points, ax_bravais, Bravais, plot_bravais_lines
 from messthaler_wulff.parsing import crystals
 from messthaler_wulff.parsing.graphs import GraphType
@@ -63,9 +65,10 @@ def plot_convex_hull(bravais, points, ax=None, color=None, alpha=1.0):
 @mydefaults.sub_command
 def plot(parser: ArgumentParser) -> mydefaults.MAGIC:
     GraphType.add_args(parser)
-    parser.add_argument("mode")
+    parser.add_argument("mode", help="Possible flag values are p,l,c standing for "
+                                     "points, lines, convex hull respectively")
 
-    crystals.add_args(parser)
+    parser.add_argument("crystal", default=tuple(), type=crystals.from_path)
     parser.add_argument("-o", "--orthogonal", action="store_true")
     parser.add_argument("-a", "--axis", action="store_true")
     parser.add_argument("-n", "--node-color", default="black")
@@ -81,7 +84,7 @@ def plot(parser: ArgumentParser) -> mydefaults.MAGIC:
 
     graph_type = GraphType.from_args(args)
     bravais = graph_type.bravais()
-    crystal = crystals.from_args(args)
+    crystal = args.crystal
     ax = ax_bravais(bravais)
     if bravais.dimension == 3:
         ax.set_proj_type('ortho' if args.orthogonal else 'persp')
@@ -96,6 +99,9 @@ def plot(parser: ArgumentParser) -> mydefaults.MAGIC:
         plot_bravais_lines(bravais, lines(bravais, crystal), ax, args.edge_color, args.edge_alpha)
 
     if "c" in args.mode:
+        if bravais.dimension != 3:
+            mylog.log.error(f"Cannot plot convex hull with a {bravais.dimension}d bravais lattice")
+            sys.exit(-1)
         plot_convex_hull(bravais, crystal, ax, args.hull_color, args.hull_alpha)
 
     ax.set_aspect('equal')

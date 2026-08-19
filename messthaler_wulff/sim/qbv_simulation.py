@@ -5,7 +5,7 @@ import networkx as nx
 from networkx import Graph
 
 from messthaler_wulff import mylog
-from messthaler_wulff.utils import priority_stack
+from messthaler_wulff.utils import priority_stack, duplicates
 
 
 class QBVSimulation:
@@ -133,3 +133,18 @@ def check_graph_validity(graph: Graph):
 
     if error:
         sys.exit(-1)
+
+
+def qbv_sim_with_state(graph: Graph, initial_state: list[Any]):
+    dups = duplicates(initial_state)
+    if len(dups) > 0:
+        raise ValueError(f"Duplicate values in initial state for simulation: {", ".join(map(str, dups))}")
+
+    sim = QBVSimulation(graph)
+
+    for obj in initial_state:
+        sim.toggle(obj)
+
+    assert sim.nodes == set(initial_state)
+
+    return sim

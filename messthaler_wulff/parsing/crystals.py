@@ -1,9 +1,9 @@
-from argparse import ArgumentParser
 from pathlib import Path
 
 from pydantic import RootModel
 
 from messthaler_wulff.parsing.common import NodeModel, list2vec, vec2list
+from messthaler_wulff.utils import duplicates
 
 
 class CrystalModel(RootModel):
@@ -14,7 +14,9 @@ def from_json(json: str) -> list:
     model = CrystalModel.model_validate_json(json)
 
     values = list(map(list2vec, model.root))
-    assert len(values) == len(set(values))  # TODO
+    dupl = duplicates(values)
+    if len(dupl) > 0:
+        raise ValueError(f"Duplicate vector in crystal: {", ".join(map(str, dupl))}")
     return values
 
 
@@ -32,13 +34,3 @@ def from_path(path: Path):
         string = path.read_text()
 
     return from_json(string)
-
-
-def add_args(parser: ArgumentParser):
-    parser.add_argument("crystal", type=Path)
-
-
-def from_args(args):
-    path = args.crystal
-
-    return from_path(path)

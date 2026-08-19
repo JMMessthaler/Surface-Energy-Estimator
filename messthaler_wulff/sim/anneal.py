@@ -3,13 +3,14 @@ from typing import Iterator, Any
 
 from networkx import Graph
 
-from messthaler_wulff.sim.qbv_simulation import QBVSimulation
+from messthaler_wulff import mylog
+from messthaler_wulff.sim.qbv_simulation import QBVSimulation, qbv_sim_with_state
 
 
 class Anneal:
     """A class to perform simulated annealing on a given graph using QBVSimulation."""
 
-    def __init__(self, graph: Graph, upper_bound: int) -> None:
+    def __init__(self, graph: Graph, upper_bound: int, initial_crystal=tuple()) -> None:
         """
                 Initialize the annealing process with a graph and an upper bound on node size.
 
@@ -20,11 +21,16 @@ class Anneal:
                 Raises:
                     AssertionError: If the upper bound is not within a valid range (0 < upper_bound <= graph size).
                 """
-        assert 0 < upper_bound <= len(graph), upper_bound
 
+        self.sim = qbv_sim_with_state(graph, initial_crystal)
         self.graph = graph
-        self.sim = QBVSimulation(graph)
+        self.lower_bound = len(initial_crystal)
         self.upper_bound = upper_bound
+
+        assert self.sim.size == len(initial_crystal)
+        assert self.sim.size < upper_bound <= len(graph), f"{self.sim.size=} < {upper_bound=} <= {len(graph)=}"
+
+        mylog.log.debug(f"Starting anneal with bounds {self.lower_bound} to {self.upper_bound}")
 
     def random_direction(self) -> int:
         """
@@ -36,7 +42,7 @@ class Anneal:
                          or a random bit (0 or 1) indicating the next direction.
                 """
         while True:
-            if self.sim.size <= 0:
+            if self.sim.size <= self.lower_bound:
                 return self.sim.OUTSIDE
             elif self.sim.size >= self.upper_bound:
                 return self.sim.INSIDE

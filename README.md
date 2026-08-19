@@ -66,6 +66,7 @@ The type can be one of
   - `cubic`
   - `triangular`
   - `fcc`
+  - `hcp`
 - The value `-`, which indicates that the value should be read in from the console
 
 The parameter is simply specified using the optional `-p` flag.
@@ -177,5 +178,4 @@ to optimize arbitrary quadratic forms corresponding to arbitrary graphs or
 if instead it is only applicable to bravais lattices.
 
 This algorithm is unfortunately only probabilistic and it would be useful
-to be able to compute exact solutions, but any innovation is stifled by
-a lack of mathematical understanding of the dynamics of the problem.
+to be able to compute exact solutions. 

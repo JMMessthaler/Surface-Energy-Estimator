@@ -10,12 +10,12 @@ from messthaler_wulff.sim.qbv_simulation import QBVSimulation
 @mydefaults.sub_command
 def stats(parser: ArgumentParser) -> mydefaults.MAGIC:
     GraphType.add_args_graph(parser)
-    crystals.add_args(parser)
+    parser.add_argument("crystal", default=tuple(), type=crystals.from_path)
 
     args = yield
 
     graph = GraphType.graph_from_args(args)
-    crystal = crystals.from_args(args)
+    crystal = args.crystal
     sim = QBVSimulation(graph)
 
     for x in crystal:

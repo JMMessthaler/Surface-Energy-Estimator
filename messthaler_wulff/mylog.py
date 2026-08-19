@@ -89,7 +89,9 @@ def tqdm(itr, *args, **kwargs):
         def set_postfix_str(self, *args, **kwargs):
             pass
 
-    if get_level() <= INFO:
+    if hasattr(itr, '__len__') and len(itr) < 100:
+        return NoopTqdm(itr)
+    elif get_level() <= INFO:
         return old_tqdm.tqdm(itr, *args, **kwargs)
     else:
         return NoopTqdm(itr)

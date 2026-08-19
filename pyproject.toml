@@ -12,7 +12,7 @@ only-include = [
 
 [project]
 name = "messthaler-wulff"
-version = "2026.5.10" # version
+version = "2026.7.4" # version
 authors = [
     { name = "Guenthner", email = "guenthner.jonathan@gmail.com" },
 ]

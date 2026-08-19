@@ -33,10 +33,13 @@ def test_graph1():
 
 
 bravais_data = {
+    CommonBravais.linear: 2,
     CommonBravais.square: 4,
+    CommonBravais.double_square: 6,
     CommonBravais.cubic: 6,
     CommonBravais.triangular: 6,
-    CommonBravais.fcc: 12
+    CommonBravais.fcc: 12,
+    CommonBravais.hcp: 12
 }
 
 

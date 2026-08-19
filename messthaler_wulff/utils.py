@@ -49,8 +49,8 @@ class setr[T]:
         return str(self.list)
 
 
-def psi(x: int) -> int:
-    return 2 * x - 1
+# def psi(x: int) -> int:
+#     return 2 * x - 1
 
 
 class priority_stack[T]:
@@ -124,7 +124,7 @@ class priority_stack[T]:
                 Args:
                     bound (int): The index indicating which bound to contract (0 for MIN, 1 for MAX).
                 """
-        s = psi(bound)
+        s = 2 * bound - 1
         current = self.bounds[bound]
 
         while current not in self.levels or len(self.levels[current]) == 0:
@@ -195,3 +195,16 @@ def call_by_getitem(function):
             return function(*args, **kwargs)
 
     return impl()
+
+
+def duplicates(itr):
+    seen = set()
+    dupl = set()
+
+    for obj in itr:
+        if obj in seen:
+            dupl.add(obj)
+        else:
+            seen.add(obj)
+
+    return dupl

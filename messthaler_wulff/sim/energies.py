@@ -16,7 +16,7 @@ def find(states,
                                             any improvement. Default is True.
 
         Returns:
-            list[int]: A list of best energies corresponding to the sizes of states evaluated.
+            list[int]: A list of the best energies corresponding to the sizes of states evaluated.
         """
     best = {}
 

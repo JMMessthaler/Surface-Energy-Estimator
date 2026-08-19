@@ -5,6 +5,7 @@ from typing import Iterator
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+from pygments.lexers.esoteric import BrainfuckLexer
 
 from messthaler_wulff import mylog
 from messthaler_wulff.math.vector import vec
@@ -13,7 +14,7 @@ from messthaler_wulff.math.vector import vec
 class Bravais:
     """A class representing Bravais lattices for crystallography."""
 
-    def __init__(self, primitives: list[vec], transform: np.ndarray = None) -> None:
+    def __init__(self, primitives: list[vec], transform: np.ndarray = None, _filter=lambda node: True) -> None:
         """
                 Initialize the Bravais lattice with given primitive vectors and an optional transformation matrix.
 
@@ -24,6 +25,7 @@ class Bravais:
                 Raises:
                     ValueError: If the primitives are invalid.
                 """
+        assert len(primitives) > 0
         self.check_primitives(primitives)
         self.dimension = len(primitives[0])
         assert all(len(v) == self.dimension for v in primitives)
@@ -36,6 +38,8 @@ class Bravais:
         else:
             assert transform.shape == (self.dimension, self.dimension)
             self.transform = transform
+
+        self.filter = _filter
 
     @staticmethod
     def check_primitives(primitives: list[vec]):
@@ -101,7 +105,9 @@ class Bravais:
         visited = set()
 
         for i in range(radius + 1):
-            yield from current_nodes
+            for node in current_nodes:
+                if self.filter(node):
+                    yield node
 
             next_nodes = set()
             visited |= current_nodes
@@ -137,8 +143,11 @@ class Bravais:
 
         return g
 
+    def __repr__(self):
+        return str(self)
+
     def __str__(self):
-        return str(self._primitives)
+        return f"{self.dimension}d Bravais Lattice with {self.degree // 2} primitive(s)"
 
 
 def ax_bravais(bravais: Bravais):
@@ -199,9 +208,17 @@ def plot_bravais(bravais: Bravais,
 
 class CommonBravais(Enum):
     """Enum representation of common Bravais lattices."""
+    linear = Bravais([vec.new(1)])
+
     square = Bravais([
         vec.new(1, 0),
         vec.new(0, 1)])
+
+    double_square = Bravais([
+        vec.new(2, 0),
+        vec.new(0, 2),
+        vec.new(1, 1)
+    ])
 
     cubic = Bravais([
         vec.new(1, 0, 0),
@@ -225,3 +242,23 @@ class CommonBravais(Enum):
         1 / math.sqrt(2) * np.array([[1, 1, 0],
                                      [1, 0, 1],
                                      [0, 1, 1]]))
+
+    hcp = Bravais([
+        vec.new(6, 0, 0),
+        vec.new(0, 6, 0),
+        vec.new(2, 2, 3),
+        vec.new(6, -6, 0),
+        vec.new(4, -2, -3),
+        vec.new(-2, 4, -3),
+        vec.new(-2, -2, 3),
+        vec.new(4, -2, 3),
+        vec.new(-2, 4, 3)],
+        1 / 6 * np.array([[1, 0, 0],
+                          [1 / 2, math.sqrt(3) / 2, 0],
+                          [0, 0, 2 / 3 * math.sqrt(6)]]),
+        lambda node: all(t % 6 == 0 for t in node) or all(t % 6 == 0 for t in node - vec.new(2, 2, 3)))
+
+    @classmethod
+    @property
+    def all(cls) -> list[Bravais]:
+        return [x.value for x in cls]
