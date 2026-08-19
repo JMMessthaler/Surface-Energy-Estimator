@@ -5,7 +5,6 @@ from typing import Iterator
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-from pygments.lexers.esoteric import BrainfuckLexer
 
 from messthaler_wulff import mylog
 from messthaler_wulff.math.vector import vec

@@ -177,5 +177,5 @@ It would also be of interest if this method is general, as in if it manages
 to optimize arbitrary quadratic forms corresponding to arbitrary graphs or
 if instead it is only applicable to bravais lattices.
 
-This algorithm is unfortunately only probabilistic and it would be useful
+This algorithm is probabilistic and it would be useful
 to be able to compute exact solutions. 
