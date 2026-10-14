@@ -132,7 +132,7 @@ makes calculations easy.
 
 Let us discuss the matrix formulation. We have some sparse
 matrix $L \in ℝ^{n × n}$ and we are trying to optimize the quadratic form
-$v^\top L v$ with $v \in \{0,1\}^n$.
+$v^\top L v$ with $v \in {0,1}^n$.
 
 To do this we generate essentially random vectors and
 memorize the best value seen so far. The precise method
@@ -143,8 +143,8 @@ Locally optimal removals/additions are the values of $R(v)$/$A(v)$ with optimal 
 Calculating the new energy after such a transformation is also rather easy; let us calculate
 it for adding the atom $e_i$ to the vector $v$:
 $$%a
-    δ_i := (v + e_i)^\top L (v + e_i) - v^\top L v == e_i^\top L e_i + e_i^\top L v + v^\top L e_i \\
-                                            == e_i^\top L e_i + 2e_i^\top L v
+    δ_i := (v + e_i)^\top L (v + e_i) - v^\top L v = e_i^\top L e_i + e_i^\top L v + v^\top L e_i \\
+                                            = e_i^\top L e_i + 2e_i^\top L v
 %a$$
 
 This last equality holds if we assume that $L$ is symmetric, which in this program
@@ -175,7 +175,7 @@ but perhaps also some guarantees.
 
 It would also be of interest if this method is general, as in if it manages
 to optimize arbitrary quadratic forms corresponding to arbitrary graphs or
-if instead it is only applicable to bravais lattices.
+if instead it is only applicable to Bravais lattices.
 
 This algorithm is probabilistic and it would be useful
 to be able to compute exact solutions. 
