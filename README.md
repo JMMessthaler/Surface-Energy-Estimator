@@ -132,7 +132,7 @@ makes calculations easy.
 
 Let us discuss the matrix formulation. We have some sparse
 matrix $L \in ℝ^{n × n}$ and we are trying to optimize the quadratic form
-$v^\top L v$ with $v \in &#123;0,1&#125;^n$.
+$v^\top L v$ with $v \in \lbrace 0,1 \rbrace^n$.
 
 To do this we generate essentially random vectors and
 memorize the best value seen so far. The precise method
