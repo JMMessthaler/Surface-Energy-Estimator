@@ -43,8 +43,8 @@ displays it using matplotlib. The value `plc` shows
 - `l` - the edges
 - `c` - the convex hull
 
-This command can only render crystals in 2 or three dimensions.
-The dimension is detected automatically based on the bravais
+This command can only render crystals in two or three dimensions.
+The dimension is detected automatically based on the Bravais
 lattice passed in.
 
 [More on specifying graphs](#specifying-graphs)
@@ -53,9 +53,9 @@ lattice passed in.
 
 ## Specifying graphs
 
-A graph consists of a type (which is either a bravais lattice or a finite graph)
+A graph consists of a type (which is either a Bravais lattice or a finite graph)
 and some optional parameter. The optional parameter can and must only be specified
-when entering a bravais lattice as it is the radius of the generated graph.
+when entering a Bravais lattice as it is the radius of the generated graph.
 This program in its current state does not support infinite lattices.
 
 The type can be one of
@@ -94,7 +94,7 @@ As you can see, a node may be one of
 - A list of integers
 - A string
 
-A json example for a bravais lattice:
+A json example for a Bravais lattice:
 ```json
 {
 	"type": "bravais",
@@ -137,8 +137,8 @@ $v^\top L v$ with $v \in \lbrace 0,1 \rbrace^n$.
 To do this we generate essentially random vectors and
 memorize the best value seen so far. The precise method
 for generation involves locally optimal transformations, let
-$R(v)$/$A(v)$ denote all crystals that can be reached by removing/adding an atom.
-Locally optimal removals/additions are the values of $R(v)$/$A(v)$ with optimal energy.
+$R(v) / A(v)$ denote all crystals that can be reached by removing/adding an atom.
+Locally optimal removals/additions are the values of $R(v) / A(v)$ with optimal energy.
 
 Calculating the new energy after such a transformation is also rather easy; let us calculate
 it for adding the atom $e_i$ to the vector $v$:
@@ -169,13 +169,6 @@ from the locally optimal removals/additions. This process yields very good resul
 
 ## Future Work
 
-It is fascinating why exactly this random process converges against optimal values
-and it would be very useful to have not just a mathematical understanding of it,
-but perhaps also some guarantees.
+We theorize that this method can optimize arbitrary quadratic forms corresponding to arbitrary graphs. It would be of interest to establish mathematical guarantees as well as a deeper understanding of the convergence toward optimal values for this random process.
 
-It would also be of interest if this method is general, as in if it manages
-to optimize arbitrary quadratic forms corresponding to arbitrary graphs or
-if instead it is only applicable to Bravais lattices.
-
-This algorithm is probabilistic and it would be useful
-to be able to compute exact solutions. 
+Although the algorithm is probabilistic, its results are consistent with a brute-force search and all our computations and formulae. 
